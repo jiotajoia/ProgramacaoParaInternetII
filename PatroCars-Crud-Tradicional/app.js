@@ -12,13 +12,6 @@ app.set('view engine', 'handlebars');
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-//Conexão com banco de dados
-const Sequelize = require('sequelize');
-const sequelize = new Sequelize('montadora','postgres','123456',{
-    host: 'localhost',
-    dialect: 'postgres'
-});
-
 //Rotas
 app.get('/montadoras', function(req, res){
     res.render('cadastroMontadora')
