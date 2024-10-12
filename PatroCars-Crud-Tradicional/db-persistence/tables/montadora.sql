@@ -1,14 +1,15 @@
 --Criando as tabelas:
 
 CREATE TABLE Montadora (
-		id_montadora INT NOT NULL,
+		id_montadora SERIAL NOT NULL,
 		nome VARCHAR(50) NOT NULL,
 		pais VARCHAR(50) NOT NULL,
-		CONSTRAINT PRI_CAT PRIMARY KEY(id_montadora)
+		ano_fundacao INT NOT NULL,
+		CONSTRAINT PK_MONTADORA PRIMARY KEY(id_montadora)
 );
 
 CREATE TABLE Modelo (
-		id_modelo INT NOT NULL PRIMARY KEY,
+		id_modelo SERIAL NOT NULL PRIMARY KEY,
 		nome VARCHAR(50) NOT NULL,
 		montadora_id INT NOT NULL,
 		valor_referencia INT NOT NULL,
@@ -20,7 +21,7 @@ CREATE TABLE Modelo (
 
 
 CREATE TABLE Veiculo (
-		id_veiculo INT NOT NULL PRIMARY KEY,
+		id_veiculo SERIAL NOT NULL PRIMARY KEY,
 		modelo_id INT NOT NULL,
 		cor VARCHAR(50) NOT NULL,
 		ano_fabricacao INT NOT NULL,

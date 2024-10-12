@@ -1,16 +1,34 @@
-var express = require('express');
+//Inicializando o express
+const express = require('express');
+const app = express();
+const { engine }= require('express-handlebars');
+const bodyParser = require('body-parser')
 
-var app = express();
+//Configurando a template engine
+app.engine('handlebars', engine({defaultLayout: 'main'}))
+app.set('view engine', 'handlebars');
 
-app.get('/', function(req, res){
-    res.sendFile(__dirname+'/pages/index.html');
+//Configurando o body-parser
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
+//Conexão com banco de dados
+const Sequelize = require('sequelize');
+const sequelize = new Sequelize('montadora','postgres','123456',{
+    host: 'localhost',
+    dialect: 'postgres'
 });
 
-app.get('/montadora/:veiculo/:modelo', function(req, res){
-    res.send(req.params);
+//Rotas
+app.get('/montadoras', function(req, res){
+    res.render('cadastroMontadora')
 });
 
+app.post('/cadastroMontadora', function(req, res){
+    res.send('Montadora ' + req.body.nome + ' cadastrada com sucesso');
+});
 
+//Inicializando o servidor na porta 3000
 app.listen(3000, function(){
     console.log('Servidor rodando hein')
 });
