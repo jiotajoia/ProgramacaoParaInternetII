@@ -45,6 +45,16 @@ app.post('/cadastroMontadora', function(req, res){
     })
 });
 
+//Deletando montadora
+app.get('/deletarMontadora/:id_montadora', function(req, res){
+    Montadora.destroy({where: {'id_montadora': req.params.id_montadora}}).then(function(){
+        res.send("Montadora deletada com sucesso");
+    }).catch(function(error){
+        res.send('Montadora não existe' + error);
+    });
+});
+
+
 // app.post('/cadastroModelo', function(req, res){
 //     Modelo.create({
         
@@ -66,6 +76,7 @@ app.post('/cadastroMontadora', function(req, res){
 //         res.send('Veiculo não cadastrado: ' + error)
 //     })
 // });
+
 //Inicializando o servidor na porta 3000
 app.listen(3000, function(){
     console.log('Servidor rodando hein')
