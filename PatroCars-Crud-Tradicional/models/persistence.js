@@ -8,5 +8,6 @@ const sequelize = new Sequelize('montadora','postgres','123456',{
 
 module.exports = {
     Sequelize: Sequelize,
-    sequelize: sequelize
+    sequelize: sequelize,
+    DataTypes: Sequelize.DataTypes
 }

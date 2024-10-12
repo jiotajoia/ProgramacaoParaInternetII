@@ -1,7 +1,6 @@
-const db = require('./persistence')
-import { DataTypes } from 'sequelize';
+const { sequelize, DataTypes} = require('./persistence')
 
-const Montadora = sequelize.define('Montadora', {
+const Montadora = sequelize.define('montadora', {
   id_montadora: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -20,8 +19,9 @@ const Montadora = sequelize.define('Montadora', {
     allowNull: false,
   },
 }, {
-  tableName: 'Montadora',
-  timestamps: false,  
+  tableName: 'montadora',
+  timestamps: false,
+  freezeTableName: true  
 });
 
-export default Montadora;
+module.exports = Montadora;

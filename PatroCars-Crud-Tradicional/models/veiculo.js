@@ -1,8 +1,7 @@
-const db = require('./persistence')
-import { DataTypes } from 'sequelize';
+const { sequelize, DataTypes} = require('./persistence')
 import Modelo from './modelo';
 
-const Veiculo = sequelize.define('Veiculo', {
+const Veiculo = sequelize.define('veiculo', {
     id_veiculo: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -41,8 +40,9 @@ const Veiculo = sequelize.define('Veiculo', {
         allowNull: false,
     },
 }, {
-    tableName: 'Veiculo',
+    tableName: 'veiculo',
     timestamps: false,
+    freezeTableName: true
 });
 
-export default Veiculo;
+module.exports = Veiculo;

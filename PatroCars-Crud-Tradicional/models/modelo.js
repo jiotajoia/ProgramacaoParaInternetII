@@ -1,8 +1,7 @@
-const db = require('./persistence')
-import { DataTypes } from 'sequelize';
+const { sequelize, DataTypes} = require('./persistence')
 import Montadora from './montadora';  // Importação para a Foreign Key
 
-const Modelo = sequelize.define('Modelo', {
+const Modelo = sequelize.define('modelo', {
     id_modelo: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -37,8 +36,9 @@ const Modelo = sequelize.define('Modelo', {
         allowNull: false,
     },
 }, {
-    tableName: 'Modelo',
+    tableName: 'modelo',
     timestamps: false,
+    freezeTableName: true
 });
 
-export default Modelo;
+module.exports = Modelo;
