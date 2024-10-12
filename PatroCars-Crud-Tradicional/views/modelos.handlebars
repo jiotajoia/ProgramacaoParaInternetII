@@ -1,0 +1,26 @@
+<h2>Modelos Cadastrados</h2>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th> Nome </th>
+        <th> ID da Montadora </th>
+        <th> Valor de Referência </th>
+        <th> Motorização </th>
+        <th> Turbo </th>
+        <th> Automático </th>
+    </tr>
+    {{#each modelos}}
+        <tr>
+            <td>{{id_modelo}}</td>
+            <td>{{nome}}</td>
+            <td>{{montadora_id}}</td>
+            <td>{{valor_referencia}}</td>
+            <td>{{motorizacao}}</td>
+            <td>{{turbo}}</td>
+            <td>{{automatico}}</td>
+            <td><a href='/deletarModelo/{{id_modelo}}'>Deletar Modelo</a></td>
+        </tr>
+    {{/each}}
+</table>
+    

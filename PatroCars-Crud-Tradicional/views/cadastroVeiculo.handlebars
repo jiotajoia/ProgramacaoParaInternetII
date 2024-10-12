@@ -1,0 +1,21 @@
+{{#each erros}}
+    <div>{{texto}}</div>
+{{/each}}
+
+<form action="/cadastroVeiculo", method="POST">
+    <p>ID do Modelo:</p>
+    <input type="number" name="modelo_id">
+    <p>Cor:</p>
+    <input type="text" name="cor">
+    <p>Ano de Fabricação:</p>
+    <input type="number" name="ano_fabricacao">
+    <p>Ano do Modelo:</p>
+    <input type="number" name="ano_modelo">
+    <p>Valor:</p>
+    <input type="number" name="valor">
+    <p>Placa:</p>
+    <input type="text" name="placa">
+    <p>Vendido:</p>
+    <input type="text" name="vendido">
+    <button type="submit">Cadastrar Modelo</button>
+</form>

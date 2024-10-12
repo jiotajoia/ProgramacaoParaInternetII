@@ -1,0 +1,27 @@
+<h2>Veiculos Cadastrados</h2>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th> ID do Modelo </th>
+        <th> Cor </th>
+        <th> Ano de Fabricação </th>
+        <th> Ano do Modelo </th>
+        <th> Valor </th>
+        <th> Placa </th>
+        <th> Vendido </th>
+    </tr>
+    {{#each veiculos}}
+        <tr>
+            <td>{{id_veiculo}}</td>
+            <td>{{modelo_id}}</td>
+            <td>{{cor}}</td>
+            <td>{{ano_fabricacao}}</td>
+            <td>{{ano_modelo}}</td>
+            <td>{{valor}}</td>
+            <td>{{placa}}</td>
+            <td>{{vendido}}</td>
+            <td><a href='/deletarVeiculo/{{id_veiculo}}'>Deletar Veículo</a></td>
+        </tr>
+    {{/each}}
+</table>
