@@ -8,6 +8,9 @@ const mongoose =  require('mongoose');
 const session =  require('express-session');
 const flash = require('connect-flash');
 const Montadora = require('./models/montadora');
+const Modelo = require('./models/modelo');
+const Veiculo = require('./models/veiculo');
+const usuarios = require('./routes/usuario')
 
 //Configurando sessão
 app.use(session({
@@ -67,19 +70,39 @@ app.get('/createMontadora', function(req, res){
 });
 
 app.post('/cadastroMontadora', function(req, res){
-    Montadora.create({
-        nome: req.body.nome,
-        pais: req.body.pais,
-        ano_fundacao: req.body.ano_fundacao
-    }).then(function(){
-        res.redirect('/montadoras')
-    }).catch(function(error){
-        res.send('Montadora não cadastrada: ' + error)
-    })
+
+    var erros = [];
+
+    if(!req.body.nome || typeof req.body.nome == undefined || req.body.nome == null){
+        erros.push({texto: "Nome vazio"});
+    }
+
+    if(!req.body.pais || typeof req.body.pais == undefined || req.body.pais == null){
+        erros.push({texto: "País vazio"});
+    }
+
+    if(!req.body.ano_fundacao || typeof req.body.ano_fundacao == undefined || req.body.ano_fundacao == null){
+        erros.push({texto: "Ano de fundação vazio"});
+    }
+
+    if(erros.length > 0){
+        res.render("/cadastroMontadora", {erros: erros})
+    } else{
+        Montadora.create({
+            nome: req.body.nome,
+            pais: req.body.pais,
+            ano_fundacao: req.body.ano_fundacao
+        }).then(function () {
+            res.redirect('/montadoras')
+        }).catch(function (error) {
+            res.send('Montadora não cadastrada: ' + error)
+        })
+    }
 });
 
+//editar montadora
 app.get('/editarMontadora/:id_montadora', function(req, res){
-    Montadora.findOne(({_id_montadora:req.params.id_montadora})).then(function(montadora){
+    Montadora.findOne({where: {id_montadora:req.params.id_montadora}}).then(function(montadora){
         res.render('editaMontadora', {montadora: montadora})
     }).catch(function(error){
         req.flash("error_msg", "Montadora não existe")
@@ -127,17 +150,43 @@ app.get('/createModelo', function(req, res){
 });
 
 app.post('/cadastroModelo', function (req, res) {
-    Modelo.create({
-        nome: req.body.nome,
-        montadora_id: req.body.montadora_id,
-        motorizacao: req.body.motorizacao,
-        turbo: req.body.turbo,
-        automatico: req.body.automatico
-    }).then(function () {
-        res.redirect('/modelos')
-    }).catch(function (error) {
-        res.send('Modelo não cadastrado: ' + error)
-    })
+    var erros = [];
+
+    if(!req.body.nome || typeof req.body.nome == undefined || req.body.nome == null){
+        erros.push({texto: "Nome vazio"});
+    }
+
+    if(!req.body.motorizacao || typeof req.body.motorizacao == undefined || req.body.motorizacao == null){
+        erros.push({texto: "Motorização vazio"});
+    }
+
+    if(!req.body.turbo || typeof req.body.turbo == undefined || req.body.turbo == null){
+        erros.push({texto: "Turbo vazio"});
+    }
+
+    if(!req.body.automatico || typeof req.body.automatico == undefined || req.body.automatico == null){
+        erros.push({texto: "Automatico vazio"});
+    }
+
+    if(erros.length > 0){
+        res.render("/cadastroModelo", {erros: erros})
+    } else {
+        if(req.body.montadora_id){
+
+        }
+        Modelo.create({
+            nome: req.body.nome,
+            montadora_id: req.body.montadora_id,
+            motorizacao: req.body.motorizacao,
+            turbo: req.body.turbo,
+            automatico: req.body.automatico
+        }).then(function () {
+            res.redirect('/modelos')
+        }).catch(function (error) {
+            res.send('Modelo não cadastrado: ' + error)
+        })
+    }
+
 });
 
 //Deletando modelos
@@ -185,15 +234,53 @@ app.post('/cadastroVeiculo', function(req, res){
             placa: req.body.placa,
             vendido: req.body.vendido
         }).then(function () {
-            req.flash("success_msg", "Categoria criada com sucesso")
+            req.flash("success_msg", "Veículo criado com sucesso")
             res.redirect('/veiculos')
         }).catch(function (error) {
-            req.flash("error_msg", "Categoria não foi criada com sucesso")
+            req.flash("error_msg", "Veículo não foi criado")
             res.redirect("/")
         })
     }
    
 });
+
+//app.use('/usuarios', usuarios)
+
+//função para verificar se o id da montadora existe
+function verificaMontadora(idBuscado){
+    Montadora.findAll().then(function(montadoras){
+        var achado = 0;
+        for(let montadora of montadoras){
+            if(montadora.id_montadora == idBuscado){
+                achado++;
+            }
+        }
+
+        if(achado == 0){
+            return false;
+        }
+        
+        return true;
+    });
+}
+
+//função para verificar se o id do modelo existe
+function verificaModelo(idBuscado){
+        Modelo.findAll().then(function(modelos){
+            var achado = 0;
+            for(let modelo of modelos){
+                if(modelo.id_modelo == idBuscado){
+                    achado++;
+                }
+            }
+    
+            if(achado == 0){
+                return false;
+            }
+            
+            return true;
+        });
+}
 
 //Inicializando o servidor na porta 3000
 const PORT = 3000;
