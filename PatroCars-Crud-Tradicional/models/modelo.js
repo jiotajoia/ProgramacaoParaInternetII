@@ -1,5 +1,5 @@
 const { sequelize, DataTypes} = require('./persistence')
-import Montadora from './montadora';  // Importação para a Foreign Key
+const Montadora = require('./montadora');  // Importação para a Foreign Key
 
 const Modelo = sequelize.define('modelo', {
     id_modelo: {
@@ -20,7 +20,7 @@ const Modelo = sequelize.define('modelo', {
         },
     },
     valor_referencia: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DECIMAL,
         allowNull: false,
     },
     motorizacao: {

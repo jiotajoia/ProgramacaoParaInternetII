@@ -1,5 +1,5 @@
 const { sequelize, DataTypes} = require('./persistence')
-import Modelo from './modelo';
+const Modelo = require('./modelo');
 
 const Veiculo = sequelize.define('veiculo', {
     id_veiculo: {
