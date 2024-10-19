@@ -54,7 +54,7 @@ app.use(express.static(path.join(__dirname, "media")))
 //Rotas
 
 app.get('/', function(req, res){
-    res.render("index");
+    res.render("inicial");
 })
 
 //get montadoras
@@ -117,7 +117,6 @@ app.post("/editarMontadora", function(req, res){
    
         montadora.save().then(function(){
             req.flash("success_msg", "Montadora editada");
-            res.redirect('montadoras')
         }).catch(function(error){
             req.flash("error_msg", "Ocorreu um erro ao editar montadora")
         })
@@ -149,42 +148,50 @@ app.get('/createModelo', function(req, res){
     res.render('cadastroModelo')
 });
 
-app.post('/cadastroModelo', function (req, res) {
+app.post('/cadastroModelo', async function (req, res) {
     var erros = [];
 
-    if(!req.body.nome || typeof req.body.nome == undefined || req.body.nome == null){
-        erros.push({texto: "Nome vazio"});
+    if (!req.body.nome || typeof req.body.nome == undefined || req.body.nome == null) {
+        erros.push({ texto: "Nome vazio" });
     }
 
-    if(!req.body.motorizacao || typeof req.body.motorizacao == undefined || req.body.motorizacao == null){
-        erros.push({texto: "Motorização vazio"});
+    if (!req.body.motorizacao || typeof req.body.motorizacao == undefined || req.body.motorizacao == null) {
+        erros.push({ texto: "Motorização vazio" });
     }
 
-    if(!req.body.turbo || typeof req.body.turbo == undefined || req.body.turbo == null){
-        erros.push({texto: "Turbo vazio"});
+    if (!req.body.turbo || typeof req.body.turbo == undefined || req.body.turbo == null) {
+        erros.push({ texto: "Turbo vazio" });
     }
 
-    if(!req.body.automatico || typeof req.body.automatico == undefined || req.body.automatico == null){
-        erros.push({texto: "Automatico vazio"});
+    if (!req.body.automatico || typeof req.body.automatico == undefined || req.body.automatico == null) {
+        erros.push({ texto: "Automatico vazio" });
     }
 
-    if(erros.length > 0){
-        res.render("/cadastroModelo", {erros: erros})
+    if (erros.length > 0) {
+        res.render("/cadastroModelo", { erros: erros })
     } else {
-        if(req.body.montadora_id){
+        try {
+            const montadoraExiste = await verificaMontadora(req.body.montadora_id);
 
-        }
-        Modelo.create({
-            nome: req.body.nome,
-            montadora_id: req.body.montadora_id,
-            motorizacao: req.body.motorizacao,
-            turbo: req.body.turbo,
-            automatico: req.body.automatico
-        }).then(function () {
-            res.redirect('/modelos')
-        }).catch(function (error) {
+             if (montadoraExiste) {
+
+                await Modelo.create({
+                    nome: req.body.nome,
+                    montadora_id: req.body.montadora_id,
+                    motorizacao: req.body.motorizacao,
+                    turbo: req.body.turbo,
+                    automatico: req.body.automatico
+                })
+
+                res.redirect('/modelos')
+            } else {
+                res.send('Modelo não cadastrado: Montadora não encontrada')
+            }
+
+        } catch (error) {
             res.send('Modelo não cadastrado: ' + error)
-        })
+        }
+
     }
 
 });
@@ -247,25 +254,20 @@ app.post('/cadastroVeiculo', function(req, res){
 //app.use('/usuarios', usuarios)
 
 //função para verificar se o id da montadora existe
-function verificaMontadora(idBuscado){
-    Montadora.findAll().then(function(montadoras){
-        var achado = 0;
-        for(let montadora of montadoras){
-            if(montadora.id_montadora == idBuscado){
-                achado++;
-            }
-        }
+async function verificaMontadora(idBuscado){
 
-        if(achado == 0){
-            return false;
-        }
-        
-        return true;
-    });
+    try{
+        const existe= await Montadora.findOne({ where: { id_montadora: idBuscado }})
+
+        return existe ? true : false;
+    } catch(error){
+        req.flash("error_msg", "Montadora não encontrada" + error)
+    }
+
 }
 
 //função para verificar se o id do modelo existe
-function verificaModelo(idBuscado){
+async function verificaModelo(idBuscado){
         Modelo.findAll().then(function(modelos){
             var achado = 0;
             for(let modelo of modelos){
