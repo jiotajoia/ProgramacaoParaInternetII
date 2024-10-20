@@ -64,6 +64,22 @@ app.get('/', function(req, res){
     res.render("inicial", { title: 'Página Inicial', bodyClass: 'style/style'});
 })
 
+app.get('/create', function(req, res){
+    res.render("create", { title: 'Create', bodyClass: 'style/style'})
+})
+
+app.get('/read', function(req, res){
+    res.render("read", { title: 'Read', bodyClass: 'style/style'})
+})
+
+app.get('/update', function(req, res){
+    res.render("update", { title: 'Update', bodyClass: 'style/style'})
+})
+
+app.get('/delete', function(req, res){
+    res.render("delete", { title: 'Delete', bodyClass: 'style/style'})
+})
+
 //get montadoras
 app.get('/montadoras', function(req, res){
     Montadora.findAll().then(function(montadoras){
@@ -73,7 +89,7 @@ app.get('/montadoras', function(req, res){
 
 //cadastrando montadora
 app.get('/createMontadora', function(req, res){
-   res.render('cadastroMontadora')
+   res.render('cadastroMontadora', { title: 'Create Montadora', bodyClass: 'style/create'})
 });
 
 app.post('/cadastroMontadora', function(req, res){
@@ -110,29 +126,36 @@ app.post('/cadastroMontadora', function(req, res){
 //editar montadora
 app.get('/editarMontadora/:id_montadora', function(req, res){
     Montadora.findOne({where: {id_montadora:req.params.id_montadora}}).then(function(montadora){
-        res.render('editaMontadora', {montadora: montadora})
+        res.render('editaMontadora', { title: 'Update Montadora', bodyClass: 'style/update', base:"http://localhost:3000/", montadora: montadora})
     }).catch(function(error){
         req.flash("error_msg", "Montadora não existe")
     });         
 });
 
-app.post("/editarMontadora", function(req, res){
-    Montadora.findOne(({_id_montadora: req.body.id_montadora})).then(function(montadora){
-        montadora.nome = req.body.nome
-        montadora.pais = req.body.pais
-        montadora.ano_fundacao = req.body.ano_fundacao
-   
-        montadora.save().then(function(){
-            req.flash("success_msg", "Montadora editada");
-        }).catch(function(error){
-            req.flash("error_msg", "Ocorreu um erro ao editar montadora")
-        })
+app.post("/editarMontadora", async function(req, res){
 
-        res.redirect("montadoras")
-    }).catch(function(error){
-        req.flash("error_msg", "houve um erro ao editar montadora");
-        res.redirect("montadoras")
-    });
+    try{
+        console.log("ID da montadora:", req.body.id_montadora);
+
+        const montadora = await Montadora.findByPk(req.body.id_montadora);
+
+        if (montadora) {
+            montadora.nome = req.body.nome
+            montadora.pais = req.body.pais
+            montadora.ano_fundacao = req.body.ano_fundacao
+
+            await montadora.save()
+
+            req.flash("success_msg", "Montadora editada");
+            
+            res.redirect('/montadoras')
+        } else{
+            req.flash("error_msg", "Ocorreu um erro ao editar montadora")
+            res.redirect('/montadoras')
+        }
+    } catch(error){
+        req.flash("error_msg", `houve um erro ao editar montadora: ${error}`);
+    }
 
 });
 
@@ -154,7 +177,7 @@ app.get('/modelos', function(req, res){
 
 //Cadastrando modelo
 app.get('/createModelo', function(req, res){
-    res.render('cadastroModelo')
+    res.render('cadastroModelo', { title: 'Create Modelo', bodyClass: 'style/create'})
 });
 
 app.post('/cadastroModelo', async function (req, res) {
@@ -225,7 +248,7 @@ app.get('/veiculos', function(req, res){
 
 //Cadastrando veiculo
 app.get('/createVeiculo', function(req, res){
-    res.render('cadastroVeiculo')
+    res.render('cadastroVeiculo', { title: 'Create Montadora', bodyClass: 'style/create'})
 });
 
 app.post('/cadastroVeiculo', async function(req, res){
