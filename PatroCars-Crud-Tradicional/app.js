@@ -1,5 +1,6 @@
 //Inicializando os modules
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const { engine }= require('express-handlebars');
 const bodyParser = require('body-parser')
@@ -11,6 +12,12 @@ const Montadora = require('./models/montadora');
 const Modelo = require('./models/modelo');
 const Veiculo = require('./models/veiculo');
 //const usuarios = require('./routes/usuario')
+
+app.use(cors());
+
+app.use(cors({
+    origin: 'https://jiotajoia.github.io'
+}));
 
 //Configurando sessão
 app.use(session({
