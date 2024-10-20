@@ -16,7 +16,7 @@ const Veiculo = require('./models/veiculo');
 app.use(cors());
 
 app.use(cors({
-    origin: 'https://jiotajoia.github.io'
+    origin: "https://programacaoparainternetii.onrender.com/"
 }));
 
 //Configurando sessão
