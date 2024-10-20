@@ -126,7 +126,7 @@ app.post('/cadastroMontadora', function(req, res){
 //editar montadora
 app.get('/editarMontadora/:id_montadora', function(req, res){
     Montadora.findOne({where: {id_montadora:req.params.id_montadora}}).then(function(montadora){
-        res.render('editaMontadora', { title: 'Update Montadora', bodyClass: 'style/update', base:"http://localhost:3000/", montadora: montadora})
+        res.render('editaMontadora', { title: 'Update Montadora', bodyClass: 'style/update', base:"https://programacaoparainternetii.onrender.com/", montadora: montadora})
     }).catch(function(error){
         req.flash("error_msg", "Montadora não existe")
     });         
