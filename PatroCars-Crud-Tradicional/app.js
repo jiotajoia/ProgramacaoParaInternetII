@@ -10,7 +10,7 @@ const flash = require('connect-flash');
 const Montadora = require('./models/montadora');
 const Modelo = require('./models/modelo');
 const Veiculo = require('./models/veiculo');
-const usuarios = require('./routes/usuario')
+//const usuarios = require('./routes/usuario')
 
 //Configurando sessão
 app.use(session({
@@ -42,11 +42,11 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 //Configurando o mongoose
-mongoose.connect("mongodb://localhost/montadora").then(function(){
-    console.log("Conectado ao mongoDB");
-}).catch(function(error){
-    console.log("Erro ao conectar com o mongo: "+error)
-});
+// mongoose.connect("mongodb://localhost/montadora").then(function(){
+//     console.log("Conectado ao mongoDB");
+// }).catch(function(error){
+//     console.log("Erro ao conectar com o mongo: "+error)
+// });
 
 //media
 app.use(express.static(path.join(__dirname, "media")))
@@ -54,13 +54,13 @@ app.use(express.static(path.join(__dirname, "media")))
 //Rotas
 
 app.get('/', function(req, res){
-    res.render("inicial");
+    res.render("inicial", { title: 'Página Inicial', bodyClass: 'style/style'});
 })
 
 //get montadoras
 app.get('/montadoras', function(req, res){
     Montadora.findAll().then(function(montadoras){
-        res.render('montadoras', {montadoras: montadoras});
+        res.render('montadoras', { title: 'Montadoras', bodyClass: 'style/listar', montadoras: montadoras});
     });   
 });
 
@@ -120,6 +120,8 @@ app.post("/editarMontadora", function(req, res){
         }).catch(function(error){
             req.flash("error_msg", "Ocorreu um erro ao editar montadora")
         })
+
+        res.redirect("montadoras")
     }).catch(function(error){
         req.flash("error_msg", "houve um erro ao editar montadora");
         res.redirect("montadoras")
@@ -138,8 +140,8 @@ app.get('/deletarMontadora/:id_montadora', function(req, res){
 
 //get modelos
 app.get('/modelos', function(req, res){
-    Montadora.findAll().then(function(modelos){
-        res.render('modelos', {modelos: modelos});
+    Modelo.findAll().then(function(modelos){
+        res.render('modelos', {bodyClass: 'style/listar', modelos: modelos});
     });   
 });
 
@@ -178,6 +180,7 @@ app.post('/cadastroModelo', async function (req, res) {
                 await Modelo.create({
                     nome: req.body.nome,
                     montadora_id: req.body.montadora_id,
+                    valor_referencia: req.body.valor_referencia,
                     motorizacao: req.body.motorizacao,
                     turbo: req.body.turbo,
                     automatico: req.body.automatico
@@ -185,11 +188,12 @@ app.post('/cadastroModelo', async function (req, res) {
 
                 res.redirect('/modelos')
             } else {
-                res.send('Modelo não cadastrado: Montadora não encontrada')
+                res.flash("error_msg", 'Modelo não cadastrado: Montadora não encontrada')
             }
 
         } catch (error) {
-            res.send('Modelo não cadastrado: ' + error)
+            res.flash("error_msg", `Modelo não cadastrado: ${error}`)
+            res.redirect("/")
         }
 
     }
@@ -208,7 +212,7 @@ app.get('/deletarModelo/:id_modelo', function(req, res){
 //get veiculos
 app.get('/veiculos', function(req, res){
     Montadora.findAll().then(function(veiculos){
-        res.render('veiculos', {veiculos: veiculos});
+        res.render('veiculos', {bodyClass: 'style/listar', veiculos: veiculos});
     });   
 });
 
@@ -217,7 +221,7 @@ app.get('/createVeiculo', function(req, res){
     res.render('cadastroVeiculo')
 });
 
-app.post('/cadastroVeiculo', function(req, res){
+app.post('/cadastroVeiculo', async function(req, res){
     var erros = [];
 
     if(!req.body.nome || typeof req.body.nome == undefined || req.body.nome == null){
@@ -228,25 +232,59 @@ app.post('/cadastroVeiculo', function(req, res){
         erros.push({texto: "Id do modelo inválido"});
     }
 
+    if(!req.body.cor || typeof req.body.cor == undefined || req.body.cor == null){
+        erros.push({texto: "Cor inválida"});
+    }
+
+    if(!req.body.ano_fabricacao || typeof req.body.ano_fabricacao == undefined || req.body.ano_fabricacao == null){
+        erros.push({texto: "Ano de fabricação inválido"});
+    }
+
+    if(!req.body.ano_modelo || typeof req.body.ano_modelo == undefined || req.body.ano_modelo == null){
+        erros.push({texto: "Ano de modelo inválido"});
+    }
+
+    if(!req.body.valor || typeof req.body.valor == undefined || req.body.valor == null){
+        erros.push({texto: "Valor inválido"});
+    }
+
+    if(!req.body.placa || typeof req.body.placa == undefined || req.body.placa == null){
+        erros.push({texto: "Placa inválida"});
+    }
+
+    if(!req.body.vendido || typeof req.body.vendido == undefined || req.body.vendido == null){
+        erros.push({texto: "Valor inválido para vendido"});
+    }
+
     if(erros.length > 0){
         res.render("/cadastroVeiculo", {erros: erros})
     } else{
-        Veiculo.create({
-            nome: req.body.nome,
-            modelo_id: req.body.modelo_id,
-            cor: req.body.cor,
-            ano_fabricacao: req.body.ano_fabricacao,
-            ano_modelo: req.body.ano_modelo,
-            valor: req.body.valor,
-            placa: req.body.placa,
-            vendido: req.body.vendido
-        }).then(function () {
-            req.flash("success_msg", "Veículo criado com sucesso")
-            res.redirect('/veiculos')
-        }).catch(function (error) {
-            req.flash("error_msg", "Veículo não foi criado")
+
+        try{
+            const modeloExiste = await verificaModelo(req.body.modelo_id);
+
+            if(modeloExiste){
+
+                await  Veiculo.create({
+                    nome: req.body.nome,
+                    modelo_id: req.body.modelo_id,
+                    cor: req.body.cor,
+                    ano_fabricacao: req.body.ano_fabricacao,
+                    ano_modelo: req.body.ano_modelo,
+                    valor: req.body.valor,
+                    placa: req.body.placa,
+                    vendido: req.body.vendido
+                })
+
+                res.redirect('/veiculos')
+
+            } else{
+                res.flash("error_msg", 'Veículo não cadastrado: Modelo não encontrado')
+            }
+        }catch (error){
+            req.flash("error_msg", `Veículo não foi criado: ${error}`)
             res.redirect("/")
-        })
+        }
     }
    
 });
@@ -268,24 +306,17 @@ async function verificaMontadora(idBuscado){
 
 //função para verificar se o id do modelo existe
 async function verificaModelo(idBuscado){
-        Modelo.findAll().then(function(modelos){
-            var achado = 0;
-            for(let modelo of modelos){
-                if(modelo.id_modelo == idBuscado){
-                    achado++;
-                }
-            }
-    
-            if(achado == 0){
-                return false;
-            }
-            
-            return true;
-        });
+    try{
+        const existe= await Modelo.findOne({ where: { id_modelo: idBuscado }})
+
+        return existe ? true : false;
+    } catch(error){
+        req.flash("error_msg", "Modelo não encontrada" + error)
+    }
 }
 
 //Inicializando o servidor na porta 3000
 const PORT = 3000;
 app.listen(PORT, function(){
-    console.log('Servidor rodando hein, porta: '+PORT)
+    console.log('Servidor rodando hein, porta: '+ PORT)
 });
