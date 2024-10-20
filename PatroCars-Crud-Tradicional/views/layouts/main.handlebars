@@ -3,9 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Montadora</title>
-    <link rel="stylesheet" type="text/css" href= "{{bodyClass}}.css"</link>
+    <link rel="icon" href="/imagens/favicon-32x32.png" type="image/x-icon">
+    <title>Montadora Omaga - {{title}}</title>
+        {{#if base}}
+            <base href="{{base}}">
+        {{/if}}
+    <link rel="stylesheet" type="text/css" href= "{{bodyClass}}.css">
 </head>
+
 <body>
     {{>_navbar}}
     {{>_msg}}
