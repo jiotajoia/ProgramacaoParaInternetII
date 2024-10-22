@@ -1,0 +1,15 @@
+<form action="/editarModelo" method="POST">
+    <input type="hidden" name="id_modelo" value="{{modelo.id_modelo}}">
+    <input type="hidden" name="montadora_id" value="{{modelo.montadora_id}}">
+    <p>Nome: </p>
+    <input type="text" name="nome" value="{{modelo.nome}}">
+    <p>Valor de Referencia:</p>
+    <input type="number" name="valor_referencia" value="{{modelo.valor_referencia}}">
+    <p>Motorização:</p>
+    <input type="number" step="0.1" name="motorizacao" value="{{modelo.motorizacao}}">
+    <p>Turbo:</p>
+    <input type="text" name="valor" value="{{modelo.turbo}}">
+    <p>Placa: </p>
+    <input type="text" name="automatico" value="{{modelo.automatico}}">
+    <button type="submit">Editar Montadora</button>
+</form>
