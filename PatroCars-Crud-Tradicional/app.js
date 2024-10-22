@@ -118,7 +118,8 @@ app.post('/cadastroMontadora', function(req, res){
         }).then(function () {
             res.redirect('/montadoras')
         }).catch(function (error) {
-            res.send('Montadora não cadastrada: ' + error)
+            res.flash(`Montadora não cadastrada: ${error}`)
+            res.redirect('/create')
         })
     }
 });
@@ -155,6 +156,7 @@ app.post("/editarMontadora", async function(req, res){
         }
     } catch(error){
         req.flash("error_msg", `houve um erro ao editar montadora: ${error}`);
+        res.redirect('/montadoras')
     }
 
 });
@@ -162,9 +164,10 @@ app.post("/editarMontadora", async function(req, res){
 //Deletando montadora
 app.get('/deletarMontadora/:id_montadora', function(req, res){
     Montadora.destroy({where: {'id_montadora': req.params.id_montadora}}).then(function(){
-        res.send("Montadora deletada com sucesso");
+        res.flash('success_msg',"Montadora deletada com sucesso");
+        res.redirect('/montadoras')
     }).catch(function(error){
-        res.send('Montadora não existe' + error);
+        res.flash('error_msg', `Montadora não existe${error}`);
     });
 });
 
@@ -219,13 +222,44 @@ app.post('/cadastroModelo', async function (req, res) {
                 res.redirect('/modelos')
             } else {
                 res.flash("error_msg", 'Modelo não cadastrado: Montadora não encontrada')
+                res.redirect('/modelos')
             }
 
         } catch (error) {
             res.flash("error_msg", `Modelo não cadastrado: ${error}`)
-            res.redirect("/")
+            res.redirect("/create")
         }
 
+    }
+
+});
+
+//Editando modelo
+app.post("/editarModelo", async function(req, res){
+
+    try{
+        const modelo = await Modelo.findByPk(req.body.id_modelo);
+
+        if (modelo) {
+            modelo.nome = req.body.nome
+            modelo.montadora_id = req.body.montadora_id
+            modelo.valor_referencia = req.body.valor_referencia
+            modelo.motorizacao = req.body.motorizacao
+            modelo.turbo = req.body.turbo
+            modelo.automatico = req.body.automatico
+
+            await modelo.save()
+
+            req.flash("success_msg", "Modelo editado");
+            
+            res.redirect('/modelos')
+        } else{
+            req.flash("error_msg", "Ocorreu um erro ao editar modelo")
+            res.redirect('/modelos')
+        }
+    } catch(error){
+        req.flash("error_msg", `houve um erro ao editar modelo: ${error}`);
+        res.redirect('/modelos')
     }
 
 });
@@ -233,9 +267,11 @@ app.post('/cadastroModelo', async function (req, res) {
 //Deletando modelos
 app.get('/deletarModelo/:id_modelo', function(req, res){
     Montadora.destroy({where: {'id_modelo': req.params.id_modelo}}).then(function(){
-        res.send("Modelo deletado com sucesso");
+        res.flash('success_msg',"Modelo deletado com sucesso");
+        res.redirect('/modelos')
     }).catch(function(error){
-        res.send('Modelo não existe' + error);
+        res.flash('error_msg',`Modelo não existe ${error}`);
+        res.redirect('/modelos')
     });
 });
 
@@ -297,7 +333,6 @@ app.post('/cadastroVeiculo', async function(req, res){
 
                 await  Veiculo.create({
                     nome: req.body.nome,
-                    modelo_id: req.body.modelo_id,
                     cor: req.body.cor,
                     ano_fabricacao: req.body.ano_fabricacao,
                     ano_modelo: req.body.ano_modelo,
@@ -310,6 +345,7 @@ app.post('/cadastroVeiculo', async function(req, res){
 
             } else{
                 res.flash("error_msg", 'Veículo não cadastrado: Modelo não encontrado')
+                res.redirect('/create')
             }
         }catch (error){
             req.flash("error_msg", `Veículo não foi criado: ${error}`)
@@ -317,6 +353,47 @@ app.post('/cadastroVeiculo', async function(req, res){
         }
     }
    
+});
+
+//Editando veículo
+app.post("/editarVeiculo", async function(req, res){
+
+    try{
+        const veiculo = await Veiculo.findByPk(req.body.id_beiculo);
+
+        if (veiculo) {
+            veiculo.cor = req.body.cor
+            veiculo.montadora_id = req.body.montadora_id
+            veiculo.ano_fabricacao = req.body.ano_fabricacao
+            veiculo.ano_modelo = req.body.ano_modelo
+            veiculo.valor = req.body.valor
+            veiculo.placa = req.body.placa
+
+            await veiculo.save()
+
+            req.flash("success_msg", "Veículo editado");
+            
+            res.redirect('/veiculos')
+        } else{
+            req.flash("error_msg", "Ocorreu um erro ao editar veículo")
+            res.redirect('/veiculos')
+        }
+    } catch(error){
+        req.flash("error_msg", `houve um erro ao editar veículo: ${error}`);
+        res.redirect('/veiculos')
+    }
+
+});
+
+//Deletando veículos
+app.get('/deletarVeiculo/:id_veiculo', function(req, res){
+    Montadora.destroy({where: {'id_veiculo': req.params.id_modelo}}).then(function(){
+        res.flash('success_msg',"Veículo deletado com sucesso");
+        res.redirect('/veiculos')
+    }).catch(function(error){
+        res.flash('error_msg',`Veículo não existe ${error}`);
+        res.redirect('/veiculos')
+    });
 });
 
 //app.use('/usuarios', usuarios)
