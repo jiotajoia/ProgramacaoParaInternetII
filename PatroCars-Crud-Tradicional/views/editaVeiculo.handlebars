@@ -1,0 +1,17 @@
+<form action="/editarVeiculo" method="POST">
+    <input type="hidden" name="id_veiculo" value="{{veiculo.id_veiculo}}">
+    <input type="hidden" name="modelo_id" value="{{veiculo.modelo_id}}">
+    <p>Cor: </p>
+    <input type="text" name="cor" value="{{veiculo.cor}}">
+    <p>Ano de Fabricação:</p>
+    <input type="number" name="ano_fabricacao" value="{{veiculo.ano_fabricacao}}">
+    <p>Ano do modelo:</p>
+    <input type="number" name="ano_modelo" value="{{veiculo.ano_modelo}}">
+    <p>Valor:</p>
+    <input type="number" step="0.1" name="valor" value="{{veiculo.valor}}">
+    <p>Placa: </p>
+    <input type="text" name="placa" value="{{veiculo.placa}}">
+    <p>Vendido: </p>
+    <input type="text" name="vendido" value="{{veiculo.vendido}}">
+    <button type="submit">Editar Montadora</button>
+</form>
